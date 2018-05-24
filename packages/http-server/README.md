@@ -1,7 +1,6 @@
 # @loopback/http-server
 
-This module defines common interfaces/types to create endpoints for http
-protocols.
+This module implements the HTTP server endpoint for LoopBack 4 apps.
 
 ## Contributions
 
