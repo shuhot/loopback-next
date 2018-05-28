@@ -17,8 +17,7 @@ import {
 } from './router/routing-table';
 import {OpenApiSpec, OperationObject} from '@loopback/openapi-v3-types';
 import {ServerRequest, ServerResponse} from 'http';
-import {HttpEndpoint} from '@loopback/http-server';
-import * as Http from 'http';
+import {HttpServer} from '@loopback/http-server';
 import * as cors from 'cors';
 import {Application, CoreBindings, Server} from '@loopback/core';
 import {getControllerSpec} from '@loopback/openapi-v3';
@@ -36,7 +35,6 @@ import {
 import {RestBindings} from './keys';
 import {RequestContext} from './request-context';
 import * as express from 'express';
-import {AddressInfo} from 'net';
 
 export type HttpRequestListener = (
   req: ServerRequest,
@@ -128,7 +126,7 @@ export class RestServer extends Context implements Server, HttpServerLike {
     this._setupHandlerIfNeeded();
     return this._httpHandler;
   }
-  protected _httpServer: Http.Server;
+  protected _httpServer: Server;
 
   protected _expressApp: express.Application;
 
@@ -168,6 +166,15 @@ export class RestServer extends Context implements Server, HttpServerLike {
     this._setupRequestHandler(options);
 
     this.bind(RestBindings.HANDLER).toDynamicValue(() => this.httpHandler);
+
+    this._httpServer = new HttpServer(
+      this,
+      {
+        port: options.port,
+        host: options.host,
+      },
+      this.requestHandler,
+    );
   }
 
   protected _setupRequestHandler(options: RestServerConfig) {
@@ -573,15 +580,7 @@ export class RestServer extends Context implements Server, HttpServerLike {
     // Setup the HTTP handler so that we can verify the configuration
     // of API spec, controllers and routes at startup time.
     this._setupHandlerIfNeeded();
-
-    const httpPort = await this.get<number>(RestBindings.PORT);
-    const httpHost = await this.get<string | undefined>(RestBindings.HOST);
-
-    this._httpServer = HttpEndpoint.create(
-      {port: httpPort, host: httpHost},
-      this.requestHandler,
-    );
-    return HttpEndpoint.start();
+    return this._httpServer.start();
   }
 
   /**
@@ -592,7 +591,7 @@ export class RestServer extends Context implements Server, HttpServerLike {
    */
   async stop() {
     // Kill the server instance.
-    return HttpEndpoint.stop();
+    return this._httpServer.stop();
   }
 
   protected _onUnhandledError(req: Request, res: Response, err: Error) {
