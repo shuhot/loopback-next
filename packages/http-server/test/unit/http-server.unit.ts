@@ -3,21 +3,28 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 import {HttpServer} from '../..';
-import {RestServer, RestComponent, RestBindings} from '@loopback/rest';
-import {Application, ApplicationConfig} from '@loopback/core';
-import {expect, createClientForHandler} from '@loopback/testlab';
+import {RestServer} from '@loopback/rest';
+import {Application} from '@loopback/core';
+import * as assert from 'assert';
 
 describe('HttpServer', () => {
-  // it('updates rest.port binding when listening on ephemeral port', async () => {
-  //   const server = await givenAServer();
-  //   await server.start();
-  //   expect(server.getSync(RestBindings.PORT)).to.be.above(0);
-  //   await server.stop();
-  // });
-  // it('stops the HTTP server', async () => {});
-  // async function givenAServer(options?: ApplicationConfig) {
-  //   const app = new Application(options);
-  //   app.component(RestComponent);
-  //   return await app.getServer(RestServer);
-  // }
+  it('starts server', async () => {
+    const server = await givenAServer();
+    await server.start();
+    assert(server.listening, 'Server not started');
+    await server.stop();
+  });
+
+  it('stops server', async () => {
+    const server = await givenAServer();
+    await server.start();
+    await server.stop();
+    assert(!server.listening, 'Server not stopped');
+  });
+
+  async function givenAServer() {
+    const app = new Application();
+    const restServer = new RestServer(app);
+    return new HttpServer(restServer, {port: 3000, host: ''}, (req, res) => {});
+  }
 });

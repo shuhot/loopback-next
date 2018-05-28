@@ -8,17 +8,31 @@ import {RestServer, HttpRequestListener} from '@loopback/rest';
 import {AddressInfo} from 'net';
 import * as pEvent from 'p-event';
 
+/**
+ * Object for specifyig the HTTP / HTTPS server options
+ */
 export type HttpOptions = {
   port: number;
   host: string | undefined;
 };
 
+/**
+ * HTTP / HTTPS server used by LoopBack's RestServer
+ *
+ * @export
+ * @class HttpServer
+ */
 export class HttpServer {
   private restServer: RestServer;
   private httpPort: number;
   private httpHost: string | undefined;
   private httpServer: Server;
 
+  /**
+   * @param restServer
+   * @param httpOptions
+   * @param httpRequestListener
+   */
   constructor(
     restServer: RestServer,
     httpOptions: HttpOptions,
@@ -30,6 +44,9 @@ export class HttpServer {
     this.httpServer = createServer(httpRequestListener);
   }
 
+  /**
+   * Starts the HTTP / HTTPS server
+   */
   public start(): Promise<void> {
     this.httpServer.listen(this.httpPort, this.httpHost);
     return new Promise<void>(async (resolve, reject) => {
@@ -44,6 +61,9 @@ export class HttpServer {
     });
   }
 
+  /**
+   * Stops the HTTP / HTTPS server
+   */
   public stop(): Promise<void> {
     this.httpServer.close();
     return new Promise<void>(async (resolve, reject) => {
@@ -54,5 +74,12 @@ export class HttpServer {
         reject();
       }
     });
+  }
+
+  /**
+   * Whether the HTTP / HTTPS server is listening or not
+   */
+  public get listening(): Boolean {
+    return this.httpServer.listening;
   }
 }
