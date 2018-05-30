@@ -4,46 +4,40 @@ This package implements the HTTP / HTTPS server endpoint for LoopBack 4 apps.
 
 ## Overview
 
-This is an internal package used by `RestServer` for creating its HTTP / HTTPS server.
+This is an internal package used by LoopBack 4 for creating HTTP / HTTPS server.
 
 ## Installation
 
 To use this package, you'll need to install `@loopback/http-server`.
 
 ```sh
-npm i @loopback/htp-server
+npm i @loopback/http-server
 ```
 
 ## Usage
 
-`@loopback/http-server` should be instantiated with an instance of `RestServer`, HTTP / HTTPS options object, and a request handler function.
+`@loopback/http-server` should be instantiated with a request handler function, and an HTTP / HTTPS options object.
 
 ```js
-import {RestServer} from '@loopback/rest';
-import {Application} from '@loopback/core';
-
-const app = new Application();
-const restServer = new RestServer(app);
-const httpServer = new HttpServer(restServer, {port: 3000, host: ''}, (req, res) => {});
+const httpServer = new HttpServer((req, res) => { res.end('Hello world')}, {port: 3000, host: ''});
 ```
 
-Call the `start()` method to start the server.
+Instance methods of `HttpServer`.
 
-```js
-httpServer.start()
-```
+| Method  | Description          |
+| ------- | -------------------- |
+| `start()` | Starts the server    |
+| `stop()`  | Stops the server     |
 
-Call the `stop()` method to stop the server.
+Instance properties of `HttpServer`.
 
-Use the `listening` property to check whether the server is listening for connections or not.
-
-```js
-if (httpServer.listening) {
-  console.log('Server is running');
-} else {
-  console.log('Server is not running');
-}
-```
+| Property    | Description            |
+| ----------- | ---------------------- |
+| `address`   | Address details        |
+| `host`      | host of the server     |
+| `port`      | port of the server     |
+| `protocol`  | protocol of the server |
+| `url`       | url the server         |
 
 ## Contributions
 

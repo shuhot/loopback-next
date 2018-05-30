@@ -158,6 +158,7 @@ export class RestServer extends Context implements Server, HttpServerLike {
     }
     this.bind(RestBindings.PORT).to(options.port);
     this.bind(RestBindings.HOST).to(options.host);
+    this.bind(RestBindings.PROTOCOL).to(options.protocol || 'http');
 
     if (options.sequence) {
       this.sequence(options.sequence);
@@ -166,15 +167,6 @@ export class RestServer extends Context implements Server, HttpServerLike {
     this._setupRequestHandler(options);
 
     this.bind(RestBindings.HANDLER).toDynamicValue(() => this.httpHandler);
-
-    this._httpServer = new HttpServer(
-      this,
-      {
-        port: options.port,
-        host: options.host,
-      },
-      this.requestHandler,
-    );
   }
 
   protected _setupRequestHandler(options: RestServerConfig) {
@@ -580,7 +572,23 @@ export class RestServer extends Context implements Server, HttpServerLike {
     // Setup the HTTP handler so that we can verify the configuration
     // of API spec, controllers and routes at startup time.
     this._setupHandlerIfNeeded();
-    return this._httpServer.start();
+
+    const port = await this.get<number | undefined>(RestBindings.PORT);
+    const host = await this.get<string | undefined>(RestBindings.HOST);
+    const protocol = await this.get<'http' | 'https' | undefined>(
+      RestBindings.PROTOCOL,
+    );
+
+    this._httpServer = new HttpServer(this.requestHandler, {
+      port: port,
+      host: host,
+      protocol: protocol || 'http',
+    });
+
+    await this._httpServer.start();
+    this.bind(RestBindings.PORT).to(this._httpServer.port);
+    this.bind(RestBindings.HOST).to(this._httpServer.host);
+    this.bind(RestBindings.URL).to(this._httpServer.url);
   }
 
   /**
@@ -591,17 +599,7 @@ export class RestServer extends Context implements Server, HttpServerLike {
    */
   async stop() {
     // Kill the server instance.
-    return this._httpServer.stop();
-  }
-
-  /**
-   * Whether the REST server is listening or not
-   *
-   * @returns {Boolean}
-   * @memberof RestServer
-   */
-  public get listening(): Boolean {
-    return this._httpServer.listening;
+    await this._httpServer.stop();
   }
 
   protected _onUnhandledError(req: Request, res: Response, err: Error) {
@@ -631,4 +629,5 @@ export interface RestServerConfig {
   cors?: cors.CorsOptions;
   apiExplorerUrl?: string;
   sequence?: Constructor<SequenceHandler>;
+  protocol?: 'http' | 'https';
 }
