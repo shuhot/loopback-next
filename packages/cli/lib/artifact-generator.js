@@ -20,26 +20,31 @@ module.exports = class ArtifactGenerator extends BaseGenerator {
 
   _setupGenerator() {
     debug('Setting up generator');
+    super._setupGenerator();
     this.argument('name', {
       type: String,
       required: false,
       description: 'Name for the ' + this.artifactInfo.type,
     });
-    // argument validation
-    if (this.args.length) {
-      const validationMsg = utils.validateClassName(this.args[0]);
-      if (typeof validationMsg === 'string') throw new Error(validationMsg);
-    }
-    this.artifactInfo.name = this.args[0];
-    this.artifactInfo.defaultName = 'new';
-    this.artifactInfo.relPath = path.relative(
-      this.destinationPath(),
-      this.artifactInfo.outDir,
-    );
     this.conflicter = new StatusConflicter(
       this.env.adapter,
       this.options.force,
     );
+  }
+
+  setOptions() {
+    // argument validation
+    const name = this.options.name;
+    if (name) {
+      const validationMsg = utils.validateClassName(name);
+      if (typeof validationMsg === 'string') throw new Error(validationMsg);
+    }
+    this.artifactInfo.name = name;
+    this.artifactInfo.relPath = path.relative(
+      this.destinationPath(),
+      this.artifactInfo.outDir,
+    );
+    return super.setOptions();
   }
 
   /**
@@ -83,6 +88,7 @@ module.exports = class ArtifactGenerator extends BaseGenerator {
         // capitalization
         message: utils.toClassName(this.artifactInfo.type) + ' class name:',
         when: this.artifactInfo.name === undefined,
+        default: this.artifactInfo.name,
         validate: utils.validateClassName,
       },
     ];
