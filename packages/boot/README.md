@@ -43,10 +43,12 @@ await app.start();
 
 List of Options available on BootOptions Object.
 
-| Option         | Type              | Description                         |
-| -------------- | ----------------- | ----------------------------------- |
-| `controllers`  | `ArtifactOptions` | ControllerBooter convention options |
-| `repositories` | `ArtifactOptions` | RepositoryBooter convention options |
+| Option              | Type              | Description                               |
+| ------------------- | ----------------- | ----------------------------------------- |
+| `controllers`       | `ArtifactOptions` | ControllerBooter convention options       |
+| `repositories`      | `ArtifactOptions` | RepositoryBooter convention options       |
+| `datasources`       | `ArtifactOptions` | DataSourceBooter convention options       |
+| `datasourcesConfig` | `ArtifactOptions` | DataSourceConfigBooter convention options |
 
 ### ArtifactOptions
 
@@ -98,12 +100,12 @@ Discovers and binds Controller Classes using `app.controller()`.
 
 #### Options
 
-The Options for this can be passed via `BootOptions` when calling
-`app.boot(options:BootOptions)`.
+The options for this can be passed via `BootOptions` when calling
+`app.boot(options: BootOptions)`.
 
 The options for this are passed in a `controllers` object on `BootOptions`.
 
-Available Options on the `controllers` object on `BootOptions` are as follows:
+Available options on the `controllers` object on `BootOptions` are as follows:
 
 | Options      | Type                 | Default              | Description                                                                                                   |
 | ------------ | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -121,12 +123,12 @@ must use `RepositoryMixin` from `@loopback/repository`).
 
 #### Options
 
-The Options for this can be passed via `BootOptions` when calling
-`app.boot(options:BootOptions)`.
+The options for this can be passed via `BootOptions` when calling
+`app.boot(options: BootOptions)`.
 
 The options for this are passed in a `repositories` object on `BootOptions`.
 
-Available Options on the `repositories` object on `BootOptions` are as follows:
+Available options on the `repositories` object on `BootOptions` are as follows:
 
 | Options      | Type                 | Default              | Description                                                                                                  |
 | ------------ | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -134,6 +136,52 @@ Available Options on the `repositories` object on `BootOptions` are as follows:
 | `extensions` | `string \| string[]` | `['.repository.js']` | File extensions to match for Repository artifacts                                                            |
 | `nested`     | `boolean`            | `true`               | Look in nested directories in `dirs` for Repository artifacts                                                |
 | `glob`       | `string`             |                      | A `glob` pattern string. This takes precedence over above 3 options (which are used to make a glob pattern). |
+
+### DataSourceBooter
+
+#### Description
+
+Discovers and binds DataSource Classes using `app.dataSource()` (Application
+must use `RepositoryMixin` from `@loopback/repository`).
+
+#### Options
+
+The options for this can be passed via `BootOptions` when calling
+`app.boot(options: BootOptions)`.
+
+The options for this are passed in a `datasources` object on `BootOptions`.
+
+Available options on the `datasources` object on `BootOptions` are as follows:
+
+| Options      | Type                 | Default              | Description                                                                                                  |
+| ------------ | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `dirs`       | `string \| string[]` | `['datasources']`    | Paths relative to projectRoot to look in for DataSource artifacts                                            |
+| `extensions` | `string \| string[]` | `['.datasource.js']` | File extensions to match for DataSource artifacts                                                            |
+| `nested`     | `boolean`            | `true`               | Look in nested directories in `dirs` for DataSource artifacts                                                |
+| `glob`       | `string`             |                      | A `glob` pattern string. This takes precedence over above 3 options (which are used to make a glob pattern). |
+
+### DataSourceConfigBooter
+
+#### Description
+
+Dsicovers and binds DataSource JSON Config (which is injected into a DataSource
+class) using `app.bind('datasources.config.' + config.name).to(config).tag('datasources:config');`.
+
+#### Options
+
+The options for this can be passed via `BootOptions` when calling
+`app.boot(options: BootOptions)`.
+
+The options for this are passed in a `datasourcesConfig` object on `BootOptions`.
+
+Available options on the `datasourcesConfig` object on `BootOptions` are as follows:
+
+| Options      | Type                 | Default                | Description                                                                                                  |
+| ------------ | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `dirs`       | `string \| string[]` | `['datasources']`      | Paths relative to projectRoot to look in for DataSource Config artifacts                                     |
+| `extensions` | `string \| string[]` | `['.datasource.json']` | File extensions to match for DataSource Config artifacts                                                     |
+| `nested`     | `boolean`            | `true`                 | Look in nested directories in `dirs` for DataSource Config artifacts                                         |
+| `glob`       | `string`             |                        | A `glob` pattern string. This takes precedence over above 3 options (which are used to make a glob pattern). |
 
 ## Contributions
 
