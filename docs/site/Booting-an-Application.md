@@ -226,6 +226,40 @@ The `repositories` object supports the following options:
 | `nested`     | `boolean`            | `true`               | Look in nested directories in `dirs` for Repository artifacts                                                 |
 | `glob`       | `string`             |                      | A `glob` pattern string. This takes precendence over above 3 options (which are used to make a glob pattern). |
 
+### DataSource Booter
+
+This Booter's purpose is to discover [DataSource](DataSource.md) type Artifacts
+and to bind them to the Application's Context. The use of this Booter requires
+`RepositoryMixin` from `@loopback/repository` to be mixed into your Application
+class.
+
+You can configure the conventions used in your project for a DataSource by
+passing a `datasources` object on `BootOptions` property of your Application.
+The `datasources` object support the following options:
+
+| Options      | Type                 | Default              | Description                                                                                                   |
+| ------------ | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `dirs`       | `string \| string[]` | `['datasources']`    | Paths relative to projectRoot to look in for DataSource artifacts                                             |
+| `extensions` | `string \| string[]` | `['.datasource.js']` | File extensions to match for DataSource artifacts                                                             |
+| `nested`     | `boolean`            | `true`               | Look in nested directories in `dirs` for DataSource artifacts                                                 |
+| `glob`       | `string`             |                      | A `glob` pattern string. This takes precendence over above 3 options (which are used to make a glob pattern). |
+
+### DataSourceConfig Booter
+
+This Booter's purpose is to discover [DataSource Config]() type Artifacts and
+to bind them to the Application's Context.
+
+You can configure the conventions used in your project for a DataSource Config
+by passing a `datasourcesConfig` object on `BootOptions` property of your
+Application. The `datasourcesConfig` object support the following options:
+
+| Options      | Type                 | Default                | Description                                                                                                   |
+| ------------ | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `dirs`       | `string \| string[]` | `['datasources']`      | Paths relative to projectRoot to look in for DataSource Config artifacts                                      |
+| `extensions` | `string \| string[]` | `['.datasource.json']` | File extensions to match for DataSource Config artifacts                                                      |
+| `nested`     | `boolean`            | `true`                 | Look in nested directories in `dirs` for DataSource Config artifacts                                          |
+| `glob`       | `string`             |                        | A `glob` pattern string. This takes precendence over above 3 options (which are used to make a glob pattern). |
+
 ### Custom Booters
 
 A custom Booter can be written as a Class that implements the `Booter`
