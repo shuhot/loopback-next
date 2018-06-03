@@ -97,9 +97,11 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * }
      * ```
      */
-    dataSource(dataSource: juggler.DataSource, name?: string) {
+    dataSource(dataSource: Class<juggler.DataSource>, name?: string) {
       const dataSourceKey = `datasources.${name || dataSource.name}`;
-      this.bind(dataSourceKey).to(dataSource);
+      this.bind(dataSourceKey)
+        .toClass(dataSource)
+        .tag('datasource');
     }
 
     /**
@@ -155,7 +157,7 @@ export interface AppWithRepository extends Application {
   repository(repo: Class<any>): void;
   // tslint:disable-next-line:no-any
   getRepository<R extends Repository<any>>(repo: Class<R>): Promise<R>;
-  dataSource(dataSource: juggler.DataSource, name?: string): void;
+  dataSource(dataSource: Class<juggler.DataSource>, name?: string): void;
   component(component: Class<{}>): void;
   mountComponentRepository(component: Class<{}>): void;
 }
@@ -236,7 +238,7 @@ export class RepositoryMixinDoc {
    * }
    * ```
    */
-  dataSource(dataSource: juggler.DataSource, name?: string) {}
+  dataSource(dataSource: Class<juggler.DataSource>, name?: string) {}
 
   /**
    * Add a component to this application. Also mounts

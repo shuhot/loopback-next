@@ -143,33 +143,36 @@ describe('RepositoryMixin dataSource', () => {
 
   it('binds dataSource to a binding key using the dataSource name property', () => {
     const myApp = new AppWithRepoMixin();
-    const fooDataSource: juggler.DataSource = new juggler.DataSource({
-      name: 'foo',
-      connector: 'memory',
-    });
-    myApp.dataSource(fooDataSource);
-    expectDataSourceToBeBound(myApp, fooDataSource, 'foo');
+
+    myApp.dataSource(FooDataSource);
+    expectDataSourceToBeBound(myApp, FooDataSource, 'FooDataSource');
   });
 
   it('binds dataSource to a binding key using the given name', () => {
     const myApp = new AppWithRepoMixin();
-    const barDataSource: juggler.DataSource = new juggler.DataSource({
-      connector: 'memory',
-    });
-    myApp.dataSource(barDataSource, 'bar');
-    expectDataSourceToBeBound(myApp, barDataSource, 'bar');
+    myApp.dataSource(FooDataSource, 'bar');
+    expectDataSourceToBeBound(myApp, FooDataSource, 'bar');
   });
 
   const expectDataSourceToBeBound = (
     app: AppWithRepoMixin,
-    ds: juggler.DataSource,
+    ds: Class<juggler.DataSource>,
     name: string,
   ) => {
     expect(app.find('datasources.*').map(d => d.key)).to.containEql(
       `datasources.${name}`,
     );
-    expect(app.getSync(`datasources.${name}`)).to.be.eql(ds);
+    expect(app.getSync(`datasources.${name}`)).to.be.instanceOf(ds);
   };
 
   class AppWithRepoMixin extends RepositoryMixin(Application) {}
+
+  class FooDataSource extends juggler.DataSource {
+    constructor() {
+      super({
+        name: 'foo',
+        connector: 'memory',
+      });
+    }
+  }
 });
