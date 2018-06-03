@@ -13,6 +13,11 @@ import {
   pathExists,
   appendFile,
 } from 'fs-extra';
+import {Glob} from 'glob';
+import {promisify} from 'util';
+const decache = require('decache');
+
+const globAsync = promisify(Glob);
 
 /**
  * TestSandbox class provides a convenient way to get a reference to a
@@ -58,6 +63,14 @@ export class TestSandbox {
    */
   async reset(): Promise<void> {
     this.validateInst();
+    // Decache files in case they were required and the test
+    // recreates the same file with different content.
+    const files: string[] = await globAsync('**/*@(.js|.json)', {
+      cwd: this.path,
+    });
+    files.forEach(file => {
+      decache(resolve(this.path, file));
+    });
     await emptyDir(this.path);
   }
 
