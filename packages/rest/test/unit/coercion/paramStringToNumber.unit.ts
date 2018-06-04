@@ -8,8 +8,8 @@ import {runTests} from './utils';
 describe('coerce param from string to number', () => {
   /*tslint:disable:max-line-length*/
   const testCases = [
-    ['float', {type: 'number', format: 'float'}, '3.333333', 3.333333, new Error().stack!],
-    ['double', {type: 'number', format: 'double'}, '3.3333333333', 3.3333333333, new Error().stack!],
+    ['float', {type: 'number', format: 'float'}, '3.333333', 3.333333, new Error().stack],
+    ['double', {type: 'number', format: 'double'}, '3.3333333333', 3.3333333333, new Error().stack],
   ];
 
   runTests(testCases);

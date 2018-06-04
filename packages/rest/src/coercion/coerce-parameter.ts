@@ -8,8 +8,10 @@ import {
   ReferenceObject,
   isReferenceObject,
 } from '@loopback/openapi-v3-types';
-
 import * as HttpErrors from 'http-errors';
+import * as debugModule from 'debug';
+
+const debug = debugModule('loopback:rest:coercion');
 
 /**
  * Coerce the http raw data to a JavaScript type data of a parameter
@@ -22,8 +24,14 @@ export function coerceParameter(
   data: string,
   schema?: SchemaObject | ReferenceObject,
 ) {
-  // ignore reference schema
-  if (!schema || isReferenceObject(schema)) return data;
+  if (!schema || isReferenceObject(schema)) {
+    debug(
+      'The parameter with schema %s is not coerced since schema' +
+        'dereferrence is not supported yet.',
+      schema,
+    );
+    return data;
+  }
   let coercedResult;
   coercedResult = data;
   const OAIType = getOAIPrimitiveType(schema.type, schema.format);
@@ -51,7 +59,7 @@ export function coerceParameter(
       coercedResult = isTrue(data) ? true : false;
     case 'string':
     case 'password':
-    // serizlize will be supported in next PR
+    // serialize will be supported in next PR
     case 'serialize':
       break;
     case 'unknownType':

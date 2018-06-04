@@ -60,13 +60,13 @@ export async function testCoercion<T>(config: TestArgs<T>) {
     const route = givenResolvedRoute(spec, {aparameter: config.valueFromReq});
     const args = await parseOperationArgs(req, route);
     expect(args).to.eql([config.expectedResult]);
-  } catch(err) {
+  } catch (err) {
     throw new Error(`${err} \n Failed ${config.caller.split(/\n/)[1]}`);
   }
 }
 
 // tslint:disable-next-line:no-any
-export function runTests (tests: any[][]) {
+export function runTests(tests: any[][]) {
   for (let t of tests) {
     it(t[0] as string, async () => {
       await testCoercion({

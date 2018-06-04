@@ -11,7 +11,7 @@ describe('coerce param from string to buffer', () => {
   }
   /*tslint:disable:max-line-length*/
   const testCases = [
-    ['base64', {type: 'string', format: 'byte'}, testValues.base64, Buffer.from(testValues.base64, 'base64'), new Error().stack!],
+    ['base64', {type: 'string', format: 'byte'}, testValues.base64, Buffer.from(testValues.base64, 'base64'), new Error().stack],
   ];
 
   runTests(testCases);

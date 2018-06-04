@@ -102,33 +102,37 @@ function buildOperationArguments(
       throw new Error('$ref parameters are not supported yet.');
     }
     const spec = paramSpec as ParameterObject;
-    const rawValue = getParamFromRequest();
+    const rawValue = getParamFromRequest(spec, request, pathParams);
     const coercedValue = coerceParameter(rawValue, spec.schema);
     paramArgs.push(coercedValue);
-
-    function getParamFromRequest() {
-      let result;
-      switch (spec.in) {
-        case 'query':
-          result = request.query[spec.name];
-          break;
-        case 'path':
-          result = pathParams[spec.name];
-          break;
-        case 'header':
-          // @jannyhou TBD: check edge cases
-          result = request.headers[spec.name.toLowerCase()];
-          break;
-        // TODO(jannyhou) to support `cookie`,
-        // see issue https://github.com/strongloop/loopback-next/issues/997
-        default:
-          throw new HttpErrors.NotImplemented(
-            'Parameters with "in: ' + spec.in + '" are not supported yet.',
-          );
-      }
-      return result;
-    }
   }
   if (requestBodyIndex > -1) paramArgs.splice(requestBodyIndex, 0, body);
   return paramArgs;
+}
+
+function getParamFromRequest(
+  spec: ParameterObject,
+  request: Request,
+  pathParams: PathParameterValues,
+) {
+  let result;
+  switch (spec.in) {
+    case 'query':
+      result = request.query[spec.name];
+      break;
+    case 'path':
+      result = pathParams[spec.name];
+      break;
+    case 'header':
+      // @jannyhou TBD: check edge cases
+      result = request.headers[spec.name.toLowerCase()];
+      break;
+    // TODO(jannyhou) to support `cookie`,
+    // see issue https://github.com/strongloop/loopback-next/issues/997
+    default:
+      throw new HttpErrors.NotImplemented(
+        'Parameters with "in: ' + spec.in + '" are not supported yet.',
+      );
+  }
+  return result;
 }
