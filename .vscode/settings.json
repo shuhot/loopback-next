@@ -3,7 +3,7 @@
   "editor.tabCompletion": true,
   "editor.tabSize": 2,
   "editor.trimAutoWhitespace": true,
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "[html]": {
     "editor.formatOnSave": false
   },
@@ -25,5 +25,6 @@
 
   "tslint.ignoreDefinitionFiles": true,
   "tslint.nodePath": "./packages/build/node_modules",
-  "typescript.tsdk": "./packages/build/node_modules/typescript/lib"
+  "typescript.tsdk": "./packages/build/node_modules/typescript/lib",
+  "eslint.enable": false
 }
