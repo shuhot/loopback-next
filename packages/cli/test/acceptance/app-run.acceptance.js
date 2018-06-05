@@ -21,6 +21,7 @@ describe('app-generator (SLOW)', function() {
     name: appName,
     description: 'My sandbox app for LoopBack 4',
     outdir: sandbox,
+    settings: [],
   };
 
   before(async () => {
@@ -34,7 +35,7 @@ describe('app-generator (SLOW)', function() {
 
   // Run `lerna bootstrap --scope @loopback/sandbox-app`
   // WARNING: It takes a while to run `lerna bootstrap`
-  this.timeout(0);
+  this.timeout(30 * 60 * 1000);
   before(async () => {
     process.chdir(rootDir);
     await lernaBootstrap(appName);
