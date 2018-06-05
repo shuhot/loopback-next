@@ -50,8 +50,9 @@ function run(argv, options) {
     mochaOpts.splice(allowConsoleLogsIx, 1);
   }
 
-  const args = [...mochaOpts];
+  const args = [...mochaOpts, '-t', '10000'];
 
+  process.env.DEBUG = '*';
   return utils.runCLI('mocha/bin/mocha', args, options);
 }
 
