@@ -174,6 +174,7 @@ module.exports = class ProjectGenerator extends BaseGenerator {
       },
     ];
     return this.prompt(prompts).then(props => {
+      console.log('ANSWERS for settings', props);
       const settings = props.settings || choices.map(c => c.name);
       const features = choices.map(c => {
         return {
@@ -181,7 +182,9 @@ module.exports = class ProjectGenerator extends BaseGenerator {
           value: settings.indexOf(c.name) !== -1,
         };
       });
+      console.log('FEATURES', features);
       features.forEach(f => (this.projectInfo[f.key] = f.value));
+      console.log('PROJECT INFO', this.projectInfo);
     });
   }
 

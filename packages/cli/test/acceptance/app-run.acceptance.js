@@ -11,7 +11,7 @@ const helpers = require('yeoman-test');
 const lerna = require('lerna');
 const build = require('@loopback/build');
 
-describe('app-generator (SLOW)', function() {
+describe.only('app-generator (SLOW)', function() {
   const generator = path.join(__dirname, '../../generators/app');
   const rootDir = path.join(__dirname, '../../../..');
   const sandbox = path.join(rootDir, 'sandbox/sandbox-app');
@@ -21,10 +21,9 @@ describe('app-generator (SLOW)', function() {
     name: appName,
     description: 'My sandbox app for LoopBack 4',
     outdir: sandbox,
-    settings: [],
   };
 
-  before(async () => {
+  before('scaffold a new application', async function scaffoldNewApp() {
     await helpers
       .run(generator)
       .inDir(sandbox)
@@ -33,19 +32,21 @@ describe('app-generator (SLOW)', function() {
       .withPrompts(props);
   });
 
-  // Run `lerna bootstrap --scope @loopback/sandbox-app`
-  // WARNING: It takes a while to run `lerna bootstrap`
-  this.timeout(30 * 60 * 1000);
-  before(async () => {
+  before('install dependencies', async function installDependencies() {
+    // Run `lerna bootstrap --scope @loopback/sandbox-app`
+    // WARNING: It takes a while to run `lerna bootstrap`
+    this.timeout(30 * 60 * 1000);
     process.chdir(rootDir);
     await lernaBootstrap(appName);
   });
 
-  it('passes `npm test` for the generated project', () => {
-    process.chdir(sandbox);
+  it('passes `npm test` for the generated project', function() {
+    // Increase the timeout - the tests can take more than 2 seconds to run.
+    this.timeout(2 * 60 * 1000);
     return new Promise((resolve, reject) => {
       build
         .runShell('npm', ['test'], {
+          cwd: sandbox,
           // Disable stdout
           stdio: [process.stdin, 'ignore', process.stderr],
         })
