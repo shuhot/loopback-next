@@ -7,6 +7,7 @@ import {Class} from '../common-types';
 import {Repository} from '../repositories/repository';
 import {juggler} from '../repositories/legacy-juggler-bridge';
 import {Application} from '@loopback/core';
+import {BindingScope} from '@loopback/context';
 
 /**
  * A mixin class for Application that creates a .repository()
@@ -101,7 +102,8 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
       const dataSourceKey = `datasources.${name || dataSource.name}`;
       this.bind(dataSourceKey)
         .toClass(dataSource)
-        .tag('datasource');
+        .tag('datasource')
+        .inScope(BindingScope.SINGLETON);
     }
 
     /**

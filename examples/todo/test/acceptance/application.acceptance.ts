@@ -32,7 +32,6 @@ describe('Application', () => {
       name: 'db',
       connector: 'memory',
     });
-    app.find('datasources.db')[0].inScope(BindingScope.SINGLETON);
 
     // Start Application
     await app.start();
