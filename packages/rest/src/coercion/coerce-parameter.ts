@@ -8,6 +8,7 @@ import {
   ReferenceObject,
   isReferenceObject,
 } from '@loopback/openapi-v3-types';
+import {Validator} from './validator';
 import * as HttpErrors from 'http-errors';
 import * as debugModule from 'debug';
 
@@ -35,8 +36,8 @@ export function coerceParameter(
   let coercedResult;
   coercedResult = data;
   const OAIType = getOAIPrimitiveType(schema.type, schema.format);
+  const validator = new Validator({schema});
 
-  // Review Note: [Validation place 1] Validation rules can be applied for each case
   switch (OAIType) {
     case 'byte':
       coercedResult = Buffer.from(data, 'base64');
@@ -49,6 +50,10 @@ export function coerceParameter(
       coercedResult = parseFloat(data);
       break;
     case 'number':
+      validator.validateParamBeforeCoercion('number', data);
+      coercedResult = data ? Number(data) : undefined;
+      validator.validateParamAfterCoercion('number', coercedResult);
+      break;
     case 'long':
       coercedResult = Number(data);
       break;

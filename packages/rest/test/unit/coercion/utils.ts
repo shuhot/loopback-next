@@ -18,6 +18,7 @@ import {
   parseOperationArgs,
   ResolvedRoute,
 } from '../../..';
+import * as HttpErrors from 'http-errors';
 
 export function givenOperationWithParameters(params?: ParameterObject[]) {
   return <OperationObject>{
@@ -37,6 +38,7 @@ export interface TestArgs<T> {
   schema?: SchemaObject;
   specConfig?: Partial<ParameterObject>;
   caller: string;
+  expectError: boolean;
 }
 
 export function givenResolvedRoute(
@@ -58,8 +60,18 @@ export async function testCoercion<T>(config: TestArgs<T>) {
       },
     ]);
     const route = givenResolvedRoute(spec, {aparameter: config.valueFromReq});
-    const args = await parseOperationArgs(req, route);
-    expect(args).to.eql([config.expectedResult]);
+
+    if (config.expectError) {
+      try {
+        await parseOperationArgs(req, route);
+        throw new Error("'parseOperationArgs' should throw error!");
+      } catch (err) {
+        expect(err).to.eql(config.expectedResult);
+      }
+    } else {
+      const args = await parseOperationArgs(req, route);
+      expect(args).to.eql([config.expectedResult]);
+    }
   } catch (err) {
     throw new Error(`${err} \n Failed ${config.caller.split(/\n/)[1]}`);
   }
@@ -74,7 +86,10 @@ export function runTests(tests: any[][]) {
         valueFromReq: t[2] as string,
         expectedResult: t[3],
         caller: t[4] as string,
+        expectError: t.length > 5 ? t[5] : false,
       });
     });
   }
 }
+
+export const ERROR_BAD_REQUEST = new HttpErrors['400']();
